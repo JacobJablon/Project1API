@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCU Movies API</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+
+    <script>
+        const init = () => {
+            const getMoviesBtn = document.querySelector("#getMoviesForm button");
+            getMoviesBtn.addEventListener('click', sendFetch);
+
+
+        }
+
+        window.onload = init;
+    </script>
+</head>
+
+<body>
+    <div id="header">
+        <h1>MCU Movies API</h1>
+    </div>
+    <div id="main">
+        <h2>/getMovies</h2>
+        <form id="getMoviesForm" data-method="GET" endpoint="/getMovies">
+            <label for="id">ID:</label>
+            <input type="text" name="id">
+            <br>
+            <label for="title">Title:</label>
+            <input type="text" name="title">
+            <br>
+            <label for="actor">Actor:</label>
+            <input type="text" name="actor">
+            <br>
+            <label for="director">Director:</label>
+            <input type="text" name="director">
+            <br>
+            <label for="year">Year:</label>
+            <input type="text" name="year">
+            <br>
+            <label><input type="radio" name="method" value="GET">GET</label>
+            <label><input type="radio" name="method" value="HEAD">HEAD</label>
+            <br>
+            <button type="submit">Send Request</button>
+        </form>
+
+        <h2>/getActor</h2>
+        <form id="getActorForm" data-method="GET" endpoint="/getActor">
+            <label for="actor">Actor:</label>
+            <input type="text" name="actor">
+            <br>
+            <label><input type="radio" name="method" value="GET">GET</label>
+            <label><input type="radio" name="method" value="HEAD">HEAD</label>
+            <br>
+            <button type="submit">Send Request</button>
+        </form>
+
+        <h2>/getMoviesByReviewRating</h2>
+        <form id="getMoviesByReviewRatingForm" data-method="GET" endpoint="/getMoviesByReviewRating">
+            <label>Rating:</label>
+            <select>
+                <option value=">">></option>
+                <option value="<"><</option>
+            </select>
+            <input type="number" min="1" max="9" value="7">
+            <br>
+            <label><input type="radio" name="method" value="GET">GET</label>
+            <label><input type="radio" name="method" value="HEAD">HEAD</label>
+            <br>
+            <button type="submit">Send Request</button>
+        </form>
+
+        <h2>/getMoviesByRunTime</h2>
+        <form id="getMoviesByRunTimeForm" data-method="GET" endpoint="/getMoviesByRunTime">
+            <label>Runtime:</label>
+            <select>
+                <option value="<"><</option>
+                <option value=">">></option>
+            </select>
+            <input type="number" min="1" max="200" value="120">
+            <br>
+            <label><input type="radio" name="method" value="GET">GET</label>
+            <label><input type="radio" name="method" value="HEAD">HEAD</label>
+            <br>
+            <button type="submit">Send Request</button>
+        </form>
+
+        <h2>/addMovie</h2>
+        <form id="addMovieForm" data-method="POST" endpoint="/addMovie">
+            <label for="title">Title:</label>
+            <input type="text" name="title">
+            <br>
+            <label for="phase">Phase:</label>
+            <input type="text" name="phase">
+            <br>
+            <label for="genres">Genres:</label>
+            <input type="text" name="genres">
+            <br>
+            <label for="release">Release Date:</label>
+            <input type="text" name="release">
+            <br>
+            <label for="director">Director:</label>
+            <input type="text" name="director">
+            <br>
+            <label for="screenwriter">Screen Writer:</label>
+            <input type="text" name="screenwriter">
+            <br>
+            <label for="producer">Producer:</label>
+            <input type="text" name="producer">
+            <br>
+            <label for="actor">Actor:</label>
+            <input type="text" name="actor">
+            <br>
+            <label for="plot">Plot:</label>
+            <input type="text" name="plot">
+            <br>
+            <label for="language">Language:</label>
+            <input type="text" name="language">
+            <br>
+            <label for="filminglocations">Filming Locations:</label>
+            <input type="text" name="filminglocations">
+            <br>
+            <label>Status:</label>
+            <select>
+                <option value="indevelopment">In development</option>
+                <option value="preproduction">Pre-production</option>
+                <option value="filming">Filming</option>
+                <option value="postproduction">Post-production</option>
+                <option value="released">Released</option>
+            </select>
+            <br>
+            <label>Movie Rating:</label>
+            <select>
+                <option value="G">G</option>
+                <option value="PG">PG</option>
+                <option value="PG-13" selected>PG-13</option>
+                <option value="R">R</option>
+                <option value="NC-17">NC-17</option>
+            </select>
+            <br>
+            <label for="reviewrating">Review Rating:</label>
+            <input type="number" name="reviewrating" min="0" max="10" step="0.1" value="7.5">
+            <br>
+            <label for="runtime">Runtime (in minutes):</label>
+            <input type="number" name="runtime" min="0" max="300" value="120">
+            <br>
+            <label for="budget">Budget:</label>
+            <input type="number" name="budget" value="100000000">
+            <br>
+            <label for="boxoffice">Box Office:</label>
+            <input type="number" name="boxoffice" value="100000000">
+            <br>
+            <button type="submit">Send Request</button>
+        </form>
+
+        <h2>/editStatus</h2>
+        <form id="editMovieForm" data-method="POST" endpoint="/editStatus">
+            <label for="id">ID of Movie to be Changed:</label>
+            <input type="text" name="id">
+            <br>
+            <label>New Status for Movie:</label>
+            <select>
+                <option value="indevelopment">In development</option>
+                <option value="preproduction">Pre-production</option>
+                <option value="filming" selected>Filming</option>
+                <option value="postproduction">Post-production</option>
+                <option value="released">Released</option>
+            </select>
+            <br>
+            <button type="submit">Send Request</button>
+        </form>
+    </div>
+</body>
+
+</html>
