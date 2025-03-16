@@ -1,0 +1,6 @@
+/* Code taken from W3Schools to make the endpoints collapisble */
+/* https://www.w3schools.com/howto/howto_js_collapsible.asp */
+.collapsible-content {
+  display: none;
+  overflow: hidden;
+}

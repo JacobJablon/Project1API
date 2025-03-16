@@ -6,14 +6,168 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MCU Movies API</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <link rel="stylesheet" type="text/css" href="/style.css">
 
     <script>
+        const handleResponse = async (response, method, form) => {
+            const content = form.parentElement.querySelector('#content');
+
+            switch (response.status) {
+                case 200:
+                    content.innerHTML = `<p class="is-size-5 mt-5 mb-1 has-text-success"><b>Success</b></p>`;
+                    break;
+                case 201:
+                    content.innerHTML = `<p class="is-size-5 mt-5 mb-1 has-text-success"><b>Created</b></p>`;
+                    break;
+                case 204:
+                    content.innerHTML = `<p class="is-size-5 mt-5 mb-1 has-text-success"><b>Updated (No Content)</b></p>`;
+                    return;
+                case 400:
+                    content.innerHTML = `<p class="is-size-5 mt-5 mb-1 has-text-danger"><b>Bad Request</b></p>`;
+                    break;
+                case 404:
+                    content.innerHTML = `<p class="is-size-5 mt-5 mb-1 has-text-danger"><b>Not Found</b></p>`;
+                    break;
+                default:
+                    content.innerHTML = `Error code not implemented by client.`;
+                    break;
+            }
+
+            content.innerHTML += `<p class="my-0"><b>Status: </b>${response.status}</p>`
+            content.innerHTML += `<p class="my-0"><b>Content-Length: </b>${response.headers.get('content-length')}</p>`
+            if (method == "GET" || method == "POST") {
+                let obj = await response.json();
+
+                if (obj.error) {
+                    content.innerHTML += `<p class="my-0"><b>Error: </b>${JSON.stringify(obj)}</p>`
+                } else {
+                    content.innerHTML += `<p class="my-0"><b>Response: </b>${JSON.stringify(obj)}</p>`
+                }
+            }
+        }
+
+        const requestUpdate = async (form) => {
+            let url = form.getAttribute("action");
+            const method = form.querySelector('input[name = "method"]:checked').value;
+            let params = "?";
+
+            let paramOptions = ["id", "title", "actor", "director", "year", "greaterOrLess", "rating", "runtime"];
+            
+            paramOptions.forEach(option => {
+                //checks to see if parameters exist and if they have been given a value
+                if (form.querySelector(`#${option}`) && form.querySelector(`#${option}`).value) {
+                    //builds the params variable in url encoded format
+                    params += `${option}=${form.querySelector(`#${option}`).value}&`
+                };
+            });
+
+            //add params to url
+            url += `${params}`
+            //cut off '&' from end or '?' if no params
+            url = url.slice(0, -1);
+
+            let response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json',
+                }
+            });
+
+            handleResponse(response, method, form);
+        }
+
+        const sendPost = async (form) => {
+            const url = form.getAttribute("action");
+            const method = form.getAttribute("method");
+            let formData = "";
+
+            let dataOptions = ["id", "title", "phase", "genres", "release", "director", "screenwriter",
+                "producer", "cast", "plot", "language", "filminglocation", "status", "movierating",
+                "reviewrating", "runtime", "budget", "boxoffice"];
+
+            dataOptions.forEach(option => {
+                //checks to see if data options exist and if they have been given a value
+                if (form.querySelector(`#${option}`) && form.querySelector(`#${option}`).value) {
+                    //builds the formData variable in url encoded format
+                    formData += `${option}=${form.querySelector(`#${option}`).value}&`
+                };
+            });
+
+            //cut off '&' from end if formData was given data options and values
+            if (formData.length !== 0) {
+                formData = formData.slice(0, -1);
+            }
+
+            let response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json',
+                },
+                body: formData
+            });
+
+            handleResponse(response, method, form);
+        }
+
         const init = () => {
-            const getMoviesBtn = document.querySelector("#getMoviesForm button");
-            getMoviesBtn.addEventListener('click', sendFetch);
+            //Code taken from W3Schools to make the endpoints collapisble
+            //https://www.w3schools.com/howto/howto_js_collapsible.asp
+            //**************** W3Schools ****************
+            let collapsibles = document.querySelectorAll(".collapsible");
 
+            for (let i = 0; i < collapsibles.length; i++) {
+                collapsibles[i].addEventListener("click", function () {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    if (content.style.display === "block") {
+                        content.style.display = "none";
+                    } else {
+                        content.style.display = "block";
+                    }
+                });
+            }
+            //*******************************************
 
+            const getMoviesForm = document.querySelector("#getMoviesForm");
+            const getActorForm = document.querySelector("#getActorForm");
+            const getMoviesByReviewRatingForm = document.querySelector("#getMoviesByReviewRatingForm");
+            const getMoviesByRuntime = document.querySelector("#getMoviesByRuntime");
+            const addMovieForm = document.querySelector("#addMovieForm");
+            const editMovieForm = document.querySelector("#editMovieForm");
+
+            const getData = (e, form) => {
+                e.preventDefault();
+                requestUpdate(form);
+                return false;
+            }
+
+            const addData = (e, form) => {
+                e.preventDefault();
+                sendPost(form);
+                return false;
+            }
+
+            getMoviesForm.addEventListener('submit', e => {
+                getData(e, getMoviesForm);
+            });
+            getActorForm.addEventListener('submit', e => {
+                getData(e, getActorForm);
+            });
+            getMoviesByReviewRatingForm.addEventListener('submit', e => {
+                getData(e, getMoviesByReviewRatingForm);
+            });
+            getMoviesByRuntimeForm.addEventListener('submit', e => {
+                getData(e, getMoviesByRuntimeForm);
+            });
+            addMovieForm.addEventListener('submit', e => {
+                addData(e, addMovieForm);
+            });
+            editMovieForm.addEventListener('submit', e => {
+                addData(e, editMovieForm);
+            });
         }
 
         window.onload = init;
@@ -21,159 +175,200 @@
 </head>
 
 <body>
-    <div id="header">
-        <h1>MCU Movies API</h1>
+    <div id="header" class="section has-background-link-dark pb-1">
+        <h1 class="is-size-1 title has-text-white has-text-centered">MCU Movies API</h1>
     </div>
-    <div id="main">
-        <h2>/getMovies</h2>
-        <form id="getMoviesForm" data-method="GET" endpoint="/getMovies">
-            <label for="id">ID:</label>
-            <input type="text" name="id">
-            <br>
-            <label for="title">Title:</label>
-            <input type="text" name="title">
-            <br>
-            <label for="actor">Actor:</label>
-            <input type="text" name="actor">
-            <br>
-            <label for="director">Director:</label>
-            <input type="text" name="director">
-            <br>
-            <label for="year">Year:</label>
-            <input type="text" name="year">
-            <br>
-            <label><input type="radio" name="method" value="GET">GET</label>
-            <label><input type="radio" name="method" value="HEAD">HEAD</label>
-            <br>
-            <button type="submit">Send Request</button>
-        </form>
+    <div id="main" class="is-flex is-flex-direction-column section has-background-link-dark">
+        <section class="box px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/getMovies<span class="tag is-warning m-1 has-text-weight-bold">GET</span><span class="tag is-warning m-1 has-text-weight-bold">HEAD</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <form id="getMoviesForm" method="GET" action="/getMovies">
+                    <label>ID:</label>
+                    <input id="id" type="number" name="id" min="1" max="99">
+                    <br>
+                    <label>Title:</label>
+                    <input id="title" type="text" name="title">
+                    <br>
+                    <label>Actor:</label>
+                    <input id="actor" type="text" name="actor">
+                    <br>
+                    <label>Director:</label>
+                    <input id=director type="text" name="director">
+                    <br>
+                    <label>Year:</label>
+                    <input id="year" type="number" name="year" min="2008" max="2050">
+                    <br>
+                    <label><input type="radio" name="method" value="GET" checked>GET</label>
+                    <label><input type="radio" name="method" value="HEAD">HEAD</label>
+                    <br>
+                    <input type="submit" value="Send Request" class="button is-small is-link is-rounded"/>
+                </form>
+                <div id="content" class="content"></div>
+            </div>
+        </section>
 
-        <h2>/getActor</h2>
-        <form id="getActorForm" data-method="GET" endpoint="/getActor">
-            <label for="actor">Actor:</label>
-            <input type="text" name="actor">
-            <br>
-            <label><input type="radio" name="method" value="GET">GET</label>
-            <label><input type="radio" name="method" value="HEAD">HEAD</label>
-            <br>
-            <button type="submit">Send Request</button>
-        </form>
+        <section class="box has-background-danger px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/getActor<span class="tag is-warning m-1 has-text-weight-bold">GET</span><span class="tag is-warning m-1 has-text-weight-bold">HEAD</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <form id="getActorForm" method="GET" action="/getActor">
+                    <label>Actor:</label>
+                    <input id="actor" type="text" name="actor">
+                    <br>
+                    <label><input type="radio" name="method" value="GET" checked>GET</label>
+                    <label><input type="radio" name="method" value="HEAD">HEAD</label>
+                    <br>
+                    <input type="submit" value="Send Request" class="button is-small is-link is-rounded"/>
+                </form>
+                <div id="content" class="content"></div>
+            </div>
+        </section>
 
-        <h2>/getMoviesByReviewRating</h2>
-        <form id="getMoviesByReviewRatingForm" data-method="GET" endpoint="/getMoviesByReviewRating">
-            <label>Rating:</label>
-            <select>
-                <option value=">">></option>
-                <option value="<"><</option>
-            </select>
-            <input type="number" min="1" max="9" value="7">
-            <br>
-            <label><input type="radio" name="method" value="GET">GET</label>
-            <label><input type="radio" name="method" value="HEAD">HEAD</label>
-            <br>
-            <button type="submit">Send Request</button>
-        </form>
+        <section class="box has-background-danger px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/getMoviesByReviewRating<span class="tag is-warning m-1 has-text-weight-bold">GET</span><span class="tag is-warning m-1 has-text-weight-bold">HEAD</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <form id="getMoviesByReviewRatingForm" method="GET" action="/getMoviesByReviewRating">
+                    <label>Rating:</label>
+                    <select id="greaterOrLess">
+                        <option value=">">></option>
+                        <option value="<"><</option>
+                    </select>
+                    <input id="rating" type="number" min="1" max="9" value="8">
+                    <br>
+                    <label><input type="radio" name="method" value="GET" checked>GET</label>
+                    <label><input type="radio" name="method" value="HEAD">HEAD</label>
+                    <br>
+                    <input type="submit" value="Send Request" class="button is-small is-link is-rounded"/>
+                </form>
+                <div id="content" class="content"></div>
+            </div>
+        </section>
 
-        <h2>/getMoviesByRunTime</h2>
-        <form id="getMoviesByRunTimeForm" data-method="GET" endpoint="/getMoviesByRunTime">
-            <label>Runtime:</label>
-            <select>
-                <option value="<"><</option>
-                <option value=">">></option>
-            </select>
-            <input type="number" min="1" max="200" value="120">
-            <br>
-            <label><input type="radio" name="method" value="GET">GET</label>
-            <label><input type="radio" name="method" value="HEAD">HEAD</label>
-            <br>
-            <button type="submit">Send Request</button>
-        </form>
+        <section class="box has-background-danger px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/getMoviesByRuntime<span class="tag is-warning m-1 has-text-weight-bold">GET</span><span class="tag is-warning m-1 has-text-weight-bold">HEAD</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <form id="getMoviesByRuntimeForm" method="GET" action="/getMoviesByRuntime">
+                    <label>Runtime</label>
+                    <select id="greaterOrLess">
+                        <option value="<"><</option>
+                        <option value=">">></option>
+                    </select>
+                    <input id="runtime" type="number" min="1" max="200" value="120">
+                    <br>
+                    <label><input type="radio" name="method" value="GET" checked>GET</label>
+                    <label><input type="radio" name="method" value="HEAD">HEAD</label>
+                    <br>
+                    <input type="submit" value="Send Request" class="button is-small is-link is-rounded"/>
+                </form>
+                <div id="content" class="content"></div>
+            </div>
+        </section>
 
-        <h2>/addMovie</h2>
-        <form id="addMovieForm" data-method="POST" endpoint="/addMovie">
-            <label for="title">Title:</label>
-            <input type="text" name="title">
-            <br>
-            <label for="phase">Phase:</label>
-            <input type="text" name="phase">
-            <br>
-            <label for="genres">Genres:</label>
-            <input type="text" name="genres">
-            <br>
-            <label for="release">Release Date:</label>
-            <input type="text" name="release">
-            <br>
-            <label for="director">Director:</label>
-            <input type="text" name="director">
-            <br>
-            <label for="screenwriter">Screen Writer:</label>
-            <input type="text" name="screenwriter">
-            <br>
-            <label for="producer">Producer:</label>
-            <input type="text" name="producer">
-            <br>
-            <label for="actor">Actor:</label>
-            <input type="text" name="actor">
-            <br>
-            <label for="plot">Plot:</label>
-            <input type="text" name="plot">
-            <br>
-            <label for="language">Language:</label>
-            <input type="text" name="language">
-            <br>
-            <label for="filminglocations">Filming Locations:</label>
-            <input type="text" name="filminglocations">
-            <br>
-            <label>Status:</label>
-            <select>
-                <option value="indevelopment">In development</option>
-                <option value="preproduction">Pre-production</option>
-                <option value="filming">Filming</option>
-                <option value="postproduction">Post-production</option>
-                <option value="released">Released</option>
-            </select>
-            <br>
-            <label>Movie Rating:</label>
-            <select>
-                <option value="G">G</option>
-                <option value="PG">PG</option>
-                <option value="PG-13" selected>PG-13</option>
-                <option value="R">R</option>
-                <option value="NC-17">NC-17</option>
-            </select>
-            <br>
-            <label for="reviewrating">Review Rating:</label>
-            <input type="number" name="reviewrating" min="0" max="10" step="0.1" value="7.5">
-            <br>
-            <label for="runtime">Runtime (in minutes):</label>
-            <input type="number" name="runtime" min="0" max="300" value="120">
-            <br>
-            <label for="budget">Budget:</label>
-            <input type="number" name="budget" value="100000000">
-            <br>
-            <label for="boxoffice">Box Office:</label>
-            <input type="number" name="boxoffice" value="100000000">
-            <br>
-            <button type="submit">Send Request</button>
-        </form>
+        <section class="box has-background-danger px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/addMovie<span class="tag is-warning m-1 has-text-weight-bold">POST</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <form id="addMovieForm" method="POST" action="/addMovie">
+                    <label>Title:</label>
+                    <input id="title" type="text" name="title">
+                    <br>
+                    <label>Phase:</label>
+                    <select id="phase">
+                        <option value="Phase 1">Phase 1</option>
+                        <option value="Phase 2">Phase 2</option>
+                        <option value="Phase 3">Phase 3</option>
+                        <option value="Phase 4">Phase 4</option>
+                        <option value="Phase 5">Phase 5</option>
+                        <option value="Phase 6">Phase 6</option>
+                        <option value="Phase 7">Phase 7</option>
+                    </select>
+                    <br>
+                    <label>Genres:</label>
+                    <input id="genres" type="text" name="genres">
+                    <br>
+                    <label>Release Date:</label>
+                    <input id="release" type="date" name="release" value="2025-01-01">
+                    <br>
+                    <label>Director(s):</label>
+                    <input id="director" type="text" name="director">
+                    <br>
+                    <label>Screen Writer(s):</label>
+                    <input id="screenwriter" type="text" name="screenwriter">
+                    <br>
+                    <label>Producer(s):</label>
+                    <input id="producer" type="text" name="producer">
+                    <br>
+                    <label>Cast:</label>
+                    <input id="cast" type="text" name="cast">
+                    <br>
+                    <label>Plot:</label>
+                    <input id="plot" type="text" name="plot">
+                    <br>
+                    <label>Language(s):</label>
+                    <input id="language" type="text" name="language">
+                    <br>
+                    <label>Filming Location:</label>
+                    <input id="filminglocation" type="text" name="filminglocation">
+                    <br>
+                    <label>Status:</label>
+                    <select id="status">
+                        <option value="indevelopment">In development</option>
+                        <option value="preproduction">Pre-production</option>
+                        <option value="filming">Filming</option>
+                        <option value="postproduction">Post-production</option>
+                        <option value="released">Released</option>
+                    </select>
+                    <br>
+                    <label>Movie Rating:</label>
+                    <select id="movierating">
+                        <option value="G">G</option>
+                        <option value="PG">PG</option>
+                        <option value="PG-13" selected>PG-13</option>
+                        <option value="R">R</option>
+                        <option value="NC-17">NC-17</option>
+                    </select>
+                    <br>
+                    <label>Review Rating:</label>
+                    <input id="reviewrating" type="number" name="reviewrating" min="0" max="10" step="0.1" value="7.5">
+                    <br>
+                    <label>Runtime</label>
+                    <input id="runtime" type="number" name="runtime" min="0" max="300" value="120">
+                    <br>
+                    <label>Budget:</label>
+                    <input id="budget" type="number" name="budget" value="100000000">
+                    <br>
+                    <label>Box Office:</label>
+                    <input id="boxoffice" type="number" name="boxoffice" value="100000000">
+                    <br>
+                    <input type="submit" value="Send Request" class="button is-small is-link is-rounded"/>
+                </form>
+                <div id="content" class="content"></div>
+            </div>
+        </section>
 
-        <h2>/editStatus</h2>
-        <form id="editMovieForm" data-method="POST" endpoint="/editStatus">
-            <label for="id">ID of Movie to be Changed:</label>
-            <input type="text" name="id">
-            <br>
-            <label>New Status for Movie:</label>
-            <select>
-                <option value="indevelopment">In development</option>
-                <option value="preproduction">Pre-production</option>
-                <option value="filming" selected>Filming</option>
-                <option value="postproduction">Post-production</option>
-                <option value="released">Released</option>
-            </select>
-            <br>
-            <button type="submit">Send Request</button>
-        </form>
+        <section class="box has-background-danger px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/editStatus<span class="tag is-warning m-1 has-text-weight-bold">POST</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <form id="editMovieForm" method="POST" action="/editStatus">
+                    <label>ID of Movie to be Changed:</label>
+                    <input id="id" type="number" name="id" min="1" max="99">
+                    <br>
+                    <label>New Status for Movie:</label>
+                    <select id="status">
+                        <option value="In development">In development</option>
+                        <option value="Pre-production">Pre-production</option>
+                        <option value="Filming" selected>Filming</option>
+                        <option value="Post-production">Post-production</option>
+                        <option value="Released">Released</option>
+                    </select>
+                    <br>
+                    <input type="submit" value="Send Request" class="button is-small is-link is-rounded"/>
+                </form>
+                <div id="content" class="content"></div>
+            </div>
+        </section>
     </div>
+    <footer class="footer has-text-centered has-background-link-dark">
+        <a href="/documentation.html" class="has-text-white is-underlined">MCU Movies Documentation</a>
+    </footer>
 </body>
 
 </html>

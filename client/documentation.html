@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCU Movies API - Documentation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="/style.css">
+
+    <script>
+        const init = () => {
+            //Code taken from W3Schools to make the endpoints collapisble
+            //https://www.w3schools.com/howto/howto_js_collapsible.asp
+            //**************** W3Schools ****************
+            let collapsibles = document.querySelectorAll(".collapsible");
+
+            for (let i = 0; i < collapsibles.length; i++) {
+                collapsibles[i].addEventListener("click", function () {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    if (content.style.display === "block") {
+                        content.style.display = "none";
+                    } else {
+                        content.style.display = "block";
+                    }
+                });
+            }
+            //*******************************************
+        }
+
+        window.onload = init;
+    </script>
+</head>
+
+<body>
+    <div id="header" class="section has-background-link-dark pb-1">
+        <h1 class="is-size-1 title has-text-white has-text-centered">MCU Movies API - Documentation</h1>
+    </div>
+    <div id="main" class="is-flex is-flex-direction-column section has-background-link-dark">
+        <section class="box px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/getMovies<span class="tag is-warning m-1 has-text-weight-bold">GET</span><span class="tag is-warning m-1 has-text-weight-bold">HEAD</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <h3 class="is-size-5 has-text-weight-bold">Query Parameters</h3>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">id</span>type: number (optional) - A movie's ID in the API to filter by</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">title</span>type: string (optional) - A movie's title to filter by</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">actor</span>type: string (optional) - An actor's name to filter by</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">director</span>type: string (optional) - A director's name to filter by</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">year</span>type: string (optional) - A release year to filer by</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Returns</h3>
+                <div class="ml-1">A JSON array of MCU movie objects matching the paramters</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Format:</span> [{ id: number, title: string, phase: string, genres: [string], release date: string, directors: [array], screenwriters: [string], producers: [string], cast: [string], plot: string, languages: [string], filming location: string, status: string, movie rating: string, review rating: number, movie run time: string, budget: number, box office: number }]</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Example</h3>
+                <div class="ml-1"><span class="has-text-weight-bold">Request:</span> /getMovies?title=guardians&year=2014</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Result:</span> [{"Id":10,"Title":"Guardians of the Galaxy","Phase":"Phase Two","Genres":["Action","Adventure","Comedy","Sci-Fi"],"Release Date":"01-08-2014","Director":["James Gunn"],"ScreenWriter":["Edgar Wright","Joe Cornish","Adam McKay","Paul Rudd"],"Producer":["Kevin Feige"],"Cast":["Chris Pratt","Vin Diesel","Bradley Cooper","Zoe Saldana"],"Plot":"A group of intergalactic criminals must pull together to stop a fanatical warrior with plans to purge the universe.","Language":["English"],"Filming Locations":"Shepperton Studios, Shepperton, Surrey, England, UK","Status":"Released","Movie Rating":"PG-13","Review Rating":8.1,"Movie Run Time":"121 min","Budget":170000000,"Box office":774176600}]</div>
+            </div>
+        </section>
+
+        <section class="box has-background-danger px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/getActor<span class="tag is-warning m-1 has-text-weight-bold">GET</span><span class="tag is-warning m-1 has-text-weight-bold">HEAD</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <h3 class="is-size-5 has-text-weight-bold">Query Parameters</h3>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">actor</span>type: string <span class="has-text-danger">(required)</span> - An actor's name to filter by</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Returns</h3>
+                <div class="ml-1">A JSON array of MCU movie objects the actor has been in</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Format:</span> [{ title: string, cast: [string], release date: string, movie rating: string, review rating: number }]</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Example</h3>
+                <div class="ml-1"><span class="has-text-weight-bold">Request:</span> /getActor?actor=Vin%20Diesel</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Result:</span> [{"Title":"Guardians of the Galaxy","Cast":["Chris Pratt","Vin Diesel","Bradley Cooper","Zoe Saldana"],"Release Date":"01-08-2014","Movie Rating":"PG-13","Review Rating":8.1},{"Title":"Guardians of the Galaxy Vol. 2","Cast":["Chris Pratt","Zoe Saldana","Dave Bautista","Vin Diesel"],"Release Date":"05-05-2017","Movie Rating":"PG-13","Review Rating":7.7}]</div>
+            </div>
+        </section>
+
+        <section class="box has-background-danger px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/getMoviesByReviewRating<span class="tag is-warning m-1 has-text-weight-bold">GET</span><span class="tag is-warning m-1 has-text-weight-bold">HEAD</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <h3 class="is-size-5 has-text-weight-bold">Query Parameters</h3>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">greaterOrLess</span>type: string <span class="has-text-danger">(required)</span> - Whether you're searching for movies that have a higher (>) or lower (<) rating</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">rating</span>type: number <span class="has-text-danger">(required)</span> - A rating to filter by</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Returns</h3>
+                <div class="ml-1">A JSON array of MCU movie objects matching the paramters</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Format:</span> [{ title: string, review rating: number, movie run time: string, release date: string, movie rating: string }]</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Example</h3>
+                <div class="ml-1"><span class="has-text-weight-bold">Request:</span> /getMoviesByReviewRating?greaterOrLess=<&rating=7</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Result:</span> [{"Title":"The Incredible Hulk","Review Rating":6.7,"Movie Run Time":"112 min","Release Date":"13-06-2008","Movie Rating":"PG-13"},{"Title":"Captain America: The First Avenger","Review Rating":6.9,"Movie Run Time":"124 min","Release Date":"22-07-2011","Movie Rating":"PG-13"},{"Title":"Thor: The Dark World","Review Rating":6.9,"Movie Run Time":"112 min","Release Date":"08-11-2013","Movie Rating":"PG-13"}]</div>
+            </div>
+        </section>
+
+        <section class="box has-background-danger px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/getMoviesByRuntime<span class="tag is-warning m-1 has-text-weight-bold">GET</span><span class="tag is-warning m-1 has-text-weight-bold">HEAD</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <h3 class="is-size-5 has-text-weight-bold">Query Parameters</h3>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">greaterOrLess</span>type: string <span class="has-text-danger">(required)</span> - Whether you're searching for movies that have a longer (>) or shorter (<) runtime</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">runtime</span>type: number <span class="has-text-danger">(required)</span> - A runtime to filter by</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Returns</h3>
+                <div class="ml-1">A JSON array of MCU movie objects matching the paramters</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Format:</span> [{ title: string, movie run time: string, review rating: number, release date: string, movie rating: string }]</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Example</h3>
+                <div class="ml-1"><span class="has-text-weight-bold">Request:</span> /getMoviesByRuntime?greaterOrLess=>&runtime=150</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Result:</span> [{"Title":"Avengers: Endgame","Movie Run Time":"181 min","Review Rating":8.8,"Release Date":"26-04-2019","Movie Rating":"PG-13"}]</div>
+            </div>
+        </section>
+
+        <section class="box has-background-danger px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/addMovie<span class="tag is-warning m-1 has-text-weight-bold">POST</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <h3 class="is-size-5 has-text-weight-bold">Body Parameters</h3>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">title</span>type: string <span class="has-text-danger">(required)</span> - The name of the movie</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">phase</span>type: string <span class="has-text-danger">(required)</span> - The phase of the MCU the movie falls into</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">genres</span>type: string <span class="has-text-danger">(required)</span> - A comma seperated string of the movie's genres</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">release date</span>type: string <span class="has-text-danger">(required)</span> - The date the movie came out</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">director(s)</span>type: string <span class="has-text-danger">(required)</span> - A comma seperated string of the movie's directors</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">screen writer(s)</span>type: string <span class="has-text-danger">(required)</span> - A comma seperated string of the movie's screen writers</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">producer(s)</span>type: string <span class="has-text-danger">(required)</span> - A comma seperated string of the movie's producers</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">cast</span>type: string <span class="has-text-danger">(required)</span> - A comma seperated string of the movie's lead actors</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">plot</span>type: string <span class="has-text-danger">(required)</span> - A short desciption of the movie</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">language(s)</span>type: string <span class="has-text-danger">(required)</span> - A comma seperated string of languages spoken in the movie</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">filming location</span>type: string <span class="has-text-danger">(required)</span> - The primary location where the movie was filmed</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">status</span>type: string <span class="has-text-danger">(required)</span> - The status of the movie's development</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">movie rating</span>type: string <span class="has-text-danger">(required)</span> - The parental guidance rating of the movie</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">review rating</span>type: number <span class="has-text-danger">(required)</span> - The rating the movie was given on IMDB (out of 10)</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">runtime</span>type: number <span class="has-text-danger">(required)</span> - The length of the film in minutes</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">budget</span>type: number <span class="has-text-danger">(required)</span> - The amount of money the Marvel Studios had to produce the movie</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">box office</span>type: number <span class="has-text-danger">(required)</span> - The gross worldwide amount of money the movie made</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Returns</h3>
+                <div class="ml-1">An MCU movie object representing the added movie</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Format:</span> { id: number, title: string, phase: string, genres: [string], release date: string, directors: [array], screenwriters: [string], producers: [string], cast: [string], plot: string, languages: [string], filming location: string, status: string, movie rating: string, review rating: number, movie run time: string, budget: number, box office: number }</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Example</h3>
+                <div class="ml-1"><span class="has-text-weight-bold">Request:</span> /addMovie</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Body:</span> { id: 34, title: 'Captain America: Brave New World', phase: 'Phase 5', genres: 'Action,Adventure,Sci-Fi', release: '2025-02-14', directors: 'Julius Onah', screenwriters: 'Rob Edwards,Malcolm Spellman,Delan Musson,', producers: 'Kevin Feige,Nate Moore', cast: 'Anthony Mackie,Harrison Ford,Danny Ramirez', plot: 'Sam Wilson, the new Captain America, finds homeself in the middle of an international incident and must discover the motive behind a nefarious global plan.', languages: 'English', filming location: 'Atlanta, Georgia', status: 'Released', movie rating: 'PG-13', review rating: 5.9, movie run time: '118', budget: 180000000, box office: 376004886 }</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Result:</span> {"Id":34,"Title":"Captain America: Brave New World","Phase":"Phase 5","Genres":["Action","Adventure","Sci-Fi"],"Release Date":"14-02-2025","Director":["Julius Onah"],"ScreenWriter":["Rob Edwards","Malcolm Spellman","Delan Musson"],"Producer":["Kevin Feige","Nate Moore"],"Cast":["Anthony Mackie","Harrison Ford","Danny Ramirez"],"Plot":"Sam Wilson, the new Captain America, finds himself in the middle of an international incident and must discover the motive behind a nefarious global plan.","Language":["English"],"Filming Locations":"Atlanta, Georgia","Status":"released","Movie Rating":"PG-13","Review Rating":5.9,"Movie Run Time":"118 min","Budget":180000000,"Box office":376004886}</div>
+            </div>
+        </section>
+
+        <section class="box has-background-danger px-0 py-0 column is-8 mx-auto">
+            <h2 class="collapsible button column is-12 has-text-left is-link is-size-4">/editStatus<span class="tag is-warning m-1 has-text-weight-bold">POST</span></h2>
+            <div class="collapsible-content has-background-white-ter has-text-black is-size-6 px-2 py-2">
+                <h3 class="is-size-5 has-text-weight-bold">Query Parameters</h3>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">id</span>type: number <span class="has-text-danger">(required)</span> - The ID of the movie you want to change</div>
+                <div><span class="tag is-dark m-1 has-text-weight-bold">status</span>type: string <span class="has-text-danger">(required)</span> - The status that you are making the movie</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Returns</h3>
+                <div class="ml-1">Nothing gets returned (204 status codes are "no content" responses)</div>
+                <h3 class="is-size-5 has-text-weight-bold mt-3">Example</h3>
+                <div class="ml-1"><span class="has-text-weight-bold">Request:</span> /editStatus</div>
+                <div class="ml-1"><span class="has-text-weight-bold">Body:</span> { id: 24, status: 'Released' }</div>
+            </div>
+        </section>
+    </div>
+    <footer class="footer has-text-centered has-background-link-dark">
+        <a href="/client.html" class="has-text-white is-underlined">Homepage</a>
+    </footer>
+</body>
+
+</html>
